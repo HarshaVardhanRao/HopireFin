@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logs | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>Logs</h1>
+    <p>Activity logs and system events will appear here.</p>
+    <ul>
+        {% for log in logs %}
+        <li>{{ log }}</li>
+        {% empty %}
+        <li>No logs found.</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+</body>
+</html>

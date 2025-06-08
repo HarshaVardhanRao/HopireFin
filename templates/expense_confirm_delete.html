@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Expense | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Delete Expense</h1>
+    <p>Are you sure you want to delete this expense?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Yes, delete</button>
+        <a href="/expenses/">Cancel</a>
+    </form>
+</body>
+</html>

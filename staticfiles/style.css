@@ -1,0 +1,34 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    background: #003366;
+    color: #fff;
+    padding: 1rem;
+    margin: 0 0 1rem 0;
+}
+table {
+    width: 90%;
+    margin: 1rem auto;
+    border-collapse: collapse;
+    background: #fff;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 0.5rem 1rem;
+    text-align: left;
+}
+th {
+    background: #e9ecef;
+}
+a {
+    color: #003366;
+    text-decoration: none;
+    margin: 1rem;
+}
+a:hover {
+    text-decoration: underline;
+}

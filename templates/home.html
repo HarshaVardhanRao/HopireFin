@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HopireK-Fin ERP</title>
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>Welcome to HopireK-Fin ERP</h1>
+    <p>This is the internal ERP system for Hopire.</p>
+    <div style="display:flex;gap:40px;margin-top:30px;">
+      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
+        <h3>Total Receivables</h3>
+        <p style="font-size:1.5em;font-weight:bold;">₹{{ total_receivables|default:'0.00' }}</p>
+      </div>
+      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
+        <h3>Outstanding Invoices</h3>
+        <p style="font-size:1.5em;font-weight:bold;">₹{{ outstanding_invoices|default:'0.00' }}</p>
+      </div>
+      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
+        <h3>Total Expenses</h3>
+        <p style="font-size:1.5em;font-weight:bold;">₹{{ total_expenses|default:'0.00' }}</p>
+      </div>
+    </div>
+    <div style="margin-top:40px;">
+      <h3>Recent Activity</h3>
+      <ul>
+        {% for log in recent_logs %}
+          <li>{{ log }}</li>
+        {% empty %}
+          <li>No recent activity.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <ul>
+        <li><a href="/admin/">Admin Panel</a></li>
+    </ul>
+    {% endblock %}
+</body>
+</html>

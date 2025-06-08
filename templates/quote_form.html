@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quote Form | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>{% if quote %}Edit Quote{% else %}Add Quote{% endif %}</h1>
+    <a href="/quotes/">Back to Quotes</a>
+    <form method="post" id="quote-form">
+        {% csrf_token %}
+        <label for="id_customer">Customer:</label>
+        {{ form.customer }}
+        <a href="/customers/create-popup/" target="_blank" title="Add Customer">
+            <img src="/static/plus-icon.svg" alt="Add" style="width:16px;vertical-align:middle;">
+        </a>
+        <br>
+        {{ form.expiry_date.label_tag }} {{ form.expiry_date }}<br>
+        {{ form.status.label_tag }} {{ form.status }}<br>
+        {{ form.total_amount.label_tag }} {{ form.total_amount }}<br>
+        {{ form.notes.label_tag }} {{ form.notes }}<br>
+        <button type="submit">Save</button>
+    </form>
+    <script>
+    function addCustomerToSelect(id, name) {
+        var select = document.getElementById('id_customer');
+        var option = document.createElement('option');
+        option.value = id;
+        option.text = name;
+        option.selected = true;
+        select.add(option);
+    }
+    </script>
+    {% endblock %}
+</body>
+</html>

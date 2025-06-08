@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice Form | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+{% extends "base.html" %}
+{% block content %}
+    <h1>{% if invoice %}Edit Invoice{% else %}Add Invoice{% endif %}</h1>
+    <a href="/invoices/">Back to Invoices</a>
+    <form method="post" id="invoice-form">
+        {% csrf_token %}
+        <label for="id_customer">Customer:</label>
+        {{ form.customer }}
+        <a href="/customers/create-popup/" target="_blank" title="Add Customer">
+            <img src="/static/plus-icon.svg" alt="Add" style="width:18px;vertical-align:middle;">
+        </a>
+        <br>
+        <label for="id_quote">Quote:</label>
+        {{ form.quote }}
+        <a href="/quotes/create/" target="_blank" title="Add Quote">
+            <img src="/static/plus-icon.svg" alt="Add" style="width:18px;vertical-align:middle;">
+        </a>
+        <br>
+        {{ form.reference_id.label_tag }} {{ form.reference_id }}<br>
+        {{ form.payment_method.label_tag }} {{ form.payment_method }}<br>
+        {{ form.total_amount.label_tag }} {{ form.total_amount }}<br>
+        {{ form.notes.label_tag }} {{ form.notes }}<br>
+        {{ form.is_paid.label_tag }} {{ form.is_paid }}<br>
+        <button type="submit">Save</button>
+    </form>
+    <script>
+    function addCustomerToSelect(id, name) {
+        var select = document.getElementById('id_customer');
+        var option = document.createElement('option');
+        option.value = id;
+        option.text = name;
+        option.selected = true;
+        select.add(option);
+    }
+    </script>
+{% endblock %}
+</body>
+</html>

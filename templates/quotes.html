@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quotes | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>Quotes</h1>
+    <a href="/quotes/create/">Add Quote <img src="/static/plus-icon.svg" alt="+" style="width:16px;vertical-align:middle;"></a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Total Amount</th>
+                <th>Expiry Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quote in quotes %}
+            <tr>
+                <td>{{ quote.id }}</td>
+                <td>{{ quote.customer.name }}</td>
+                <td>{{ quote.status }}</td>
+                <td>{{ quote.total_amount }}</td>
+                <td>{{ quote.expiry_date }}</td>
+                <td>
+                    <a href="/quotes/{{ quote.id }}/edit/">Edit</a> |
+                    <a href="/quotes/{{ quote.id }}/delete/">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No quotes found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}
+</body>
+</html>

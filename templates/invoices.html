@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoices | HopireK-Fin</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h1>Invoices</h1>
+    <a href="/invoices/create/">Add Invoice <img src="/static/plus-icon.svg" alt="+" style="width:16px;vertical-align:middle;"></a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Paid</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.customer.name }}</td>
+                <td>{{ invoice.total_amount }}</td>
+                <td>{{ invoice.is_paid }}</td>
+                <td>{{ invoice.created_at }}</td>
+                <td>
+                    <a href="/invoices/{{ invoice.id }}/edit/">Edit</a> |
+                    <a href="/invoices/{{ invoice.id }}/delete/">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No invoices found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}
+</body>
+</html>
