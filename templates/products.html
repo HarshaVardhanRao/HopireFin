@@ -35,7 +35,7 @@
                 <td>{{ product.category }}</td>
                 <td>{{ product.created_at|date:"Y-m-d" }}</td>
                 <td class="actions">
-                    <a href="{% url 'product_edit' product.id %}" class="btn btn-icon btn-secondary" title="Edit">
+                    <a href="{% url 'product_update' product.id %}" class="btn btn-icon btn-secondary" title="Edit">
                         <i class="ri-pencil-line"></i>
                     </a>
                     <a href="{% url 'product_delete' product.id %}" class="btn btn-icon btn-danger" title="Delete">

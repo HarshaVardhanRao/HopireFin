@@ -35,7 +35,7 @@
                 <td>{{ customer.gstin|default:"-" }}</td>
                 <td>{{ customer.created_at|date:"Y-m-d" }}</td>
                 <td class="actions">
-                    <a href="{% url 'customer_edit' customer.id %}" class="btn btn-icon btn-secondary" title="Edit">
+                    <a href="{% url 'customer_update' customer.id %}" class="btn btn-icon btn-secondary" title="Edit">
                         <i class="ri-pencil-line"></i>
                     </a>
                     <a href="{% url 'customer_delete' customer.id %}" class="btn btn-icon btn-danger" title="Delete">
