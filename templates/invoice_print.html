@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ invoice.id }} - Hopire Tech Solutions LLP</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            line-height: 1.5;
+            color: #1e293b;
+            margin: 0;
+            background: white;
+        }
+
+        /* Invoice-specific styling */
+        .invoice-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border: 2px solid #2563eb;
+            border-radius: 8px;
+        }
+
+        .invoice-header-badge {
+            background: #2563eb;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+
+        .company-info {
+            margin-bottom: 2rem;
+        }
+
+        .company-info h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 1.75rem;
+        }
+
+        .invoice-info {
+            text-align: right;
+        }
+
+        .invoice-id {
+            font-size: 1.5rem;
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .invoice-date {
+            color: #64748b;
+        }
+
+        .customer-info {
+            margin-bottom: 3rem;
+        }
+
+        .customer-info h2 {
+            color: #334155;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+        }
+
+        .table th {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: monospace;
+        }
+
+        .totals {
+            width: 300px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-weight: 500;
+        }
+
+        .grand-total {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2563eb;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .notes {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .terms-section {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .terms-section h3 {
+            color: #334155;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .terms-link {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+
+        .signature-section {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            padding-top: 3rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .signature-box h4 {
+            margin: 0;
+            color: #334155;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .signature-box p {
+            margin: 0.25rem 0 0;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 6rem;
+            color: rgba(37, 99, 235, 0.05);
+            pointer-events: none;
+            z-index: -1;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        @media print {
+            .watermark {
+                color: rgba(37, 99, 235, 0.1);
+            }
+            .invoice-container {
+                border: none;
+            }
+            .terms-section {
+                break-inside: avoid;
+            }
+            .signature-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+
+        .print-controls {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .print-btn {
+            padding: 0.75rem 1.5rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .print-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.15);
+        }
+
+        .print-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .print-btn i {
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            padding: 0.75rem 1.5rem;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .close-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="print-controls no-print">
+        <button onclick="window.print()" class="print-btn">
+            <i class="ri-printer-line"></i> Print Invoice
+        </button>
+        <button onclick="window.close()" class="close-btn">Close</button>
+    </div>
+
+    <div class="invoice-container">
+        <div class="invoice-header-badge">INVOICE</div>
+        
+        <div class="header">
+            <div class="company-info">
+                <h1>Hopire Tech Solutions LLP</h1>
+                <div>1-195, MBT Road, Angallu, Chittoor, AP - 517326</div>
+                <div>public@hopire.tech</div>
+                <div>+91 9398983918</div>
+            </div>
+            <div class="invoice-info">
+                <div class="invoice-id">Invoice #{{ invoice.id }}</div>
+                <div class="invoice-date">Date: {{ invoice.created_at|date:"F d, Y" }}</div>
+                {% if invoice.reference_id %}
+                <div>Reference: {{ invoice.reference_id }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <h2>Bill To</h2>
+            <div>{{ invoice.customer.name }}</div>
+            <div>{{ invoice.customer.billing_address|linebreaks }}</div>
+            {% if invoice.customer.gstin %}
+            <div>GSTIN: {{ invoice.customer.gstin }}</div>
+            {% endif %}
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Discount</th>
+                    <th>Tax</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if invoice.line_items.all %}
+                    {% for item in invoice.line_items.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="amount">₹{{ item.unit_price|floatformat:2 }}</td>
+                        <td class="amount">₹{{ item.discount|floatformat:2 }}</td>
+                        <td class="amount">₹{{ item.tax|floatformat:2 }}</td>
+                        <td class="amount">₹{{ item.line_total|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% if invoice.quote %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">
+                            Payment against Quote #{{ invoice.quote.id }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #64748b; padding: 2rem;">
+                            No items available
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endif %}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span class="amount">₹{{ invoice.total_amount|floatformat:2 }}</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Total Amount:</span>
+                <span class="amount">₹{{ invoice.total_amount|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        {% if invoice.notes %}
+        <div class="notes">
+            <h3>Notes</h3>
+            {{ invoice.notes|linebreaks }}
+        </div>
+        {% endif %}
+
+        <div class="terms-section">
+            <h3>Terms & Conditions</h3>
+            <p>Please review our complete terms and conditions at: 
+                <a href="https://hopire.tech/termsandconditions" class="terms-link" target="_blank">https://hopire.tech/termsandconditions</a>
+            </p>
+            <p>For any queries regarding terms and conditions, please contact: 
+                <a href="mailto:ops@hopire.tech" class="terms-link">ops@hopire.tech</a>
+            </p>
+            <ul>
+                <li>Payment is due within 30 days from the invoice date.</li>
+                <li>Late payments may incur additional charges at 1.5% per month.</li>
+                <li>Please include the invoice number in all payment communications.</li>
+                <li>Any discrepancies must be reported within 7 business days of receipt.</li>
+                <li>Bank transfer is the preferred mode of payment.</li>
+                <li>All prices are in Indian Rupees (₹) unless otherwise stated.</li>
+            </ul>
+        </div>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <h4>For Hopire Tech Solutions LLP</h4>
+                <p>Authorized Signatory</p>
+            </div>
+            <div class="signature-box">
+                <h4>{{ invoice.customer.name }}</h4>
+                <p>Received & Accepted</p>
+            </div>
+        </div>
+
+        {% if invoice.is_paid %}
+        <div style="margin-top: 2rem; color: #2563eb; font-weight: 600; text-align: center; font-size: 1.25rem; border: 2px solid #2563eb; padding: 0.5rem; border-radius: 0.375rem;">
+            PAID
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="watermark">HOPIRE</div>
+    <script>
+        // Auto-print when opened from preview
+        if (window.location.hash === '#print') {
+            window.print();
+        }
+    </script>
+</body>
+</html>

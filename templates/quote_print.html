@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quote #{{ quote.id }} - Hopire Tech Solutions LLP</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            line-height: 1.5;
+            color: #1e293b;
+            margin: 0;
+            background: white;
+        }
+
+        /* Quote-specific styling */
+        .quote-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border: 2px solid #2563eb;
+            border-radius: 8px;
+        }
+
+        .quote-header-badge {
+            background: #2563eb;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+
+        .company-info {
+            margin-bottom: 2rem;
+        }
+
+        .company-info h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 1.75rem;
+        }
+
+        .quote-info {
+            text-align: right;
+        }
+
+        .quote-id {
+            font-size: 1.5rem;
+            color: #2563eb;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quote-date {
+            color: #64748b;
+        }
+
+        .customer-info {
+            margin-bottom: 3rem;
+        }
+
+        .customer-info h2 {
+            color: #334155;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+        }
+
+        .table th {
+            background: #f1f5f9;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: monospace;
+        }
+
+        .totals {
+            width: 300px;
+            margin-left: auto;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-weight: 500;
+        }
+
+        .grand-total {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2563eb;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .notes {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .quote-status {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .status-draft { color: #64748b; }
+        .status-sent { color: #eab308; }
+        .status-accepted { color: #22c55e; }
+        .status-declined { color: #ef4444; }
+
+        .validity {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .print-controls {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .print-btn {
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .print-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .close-btn {
+            padding: 0.5rem 1rem;
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .close-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .terms-section {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .terms-section h3 {
+            color: #334155;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .signature-section {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            padding-top: 3rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .signature-box h4 {
+            margin: 0;
+            color: #334155;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .signature-box p {
+            margin: 0.25rem 0 0;
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 6rem;
+            color: rgba(37, 99, 235, 0.05);
+            pointer-events: none;
+            z-index: -1;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        @media print {
+            .watermark {
+                color: rgba(37, 99, 235, 0.1);
+            }
+            .quote-container {
+                border: none;
+            }
+            .terms-section {
+                break-inside: avoid;
+            }
+            .signature-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-controls no-print">
+        <button onclick="window.print()" class="print-btn">
+            <i class="ri-printer-line"></i> Print Quote
+        </button>
+        <button onclick="window.close()" class="close-btn">Close</button>
+    </div>
+
+    <div class="quote-container">
+        <div class="quote-header-badge">QUOTATION</div>
+        <div class="header">
+            <div class="company-info">
+                <h1>Hopire Tech Solutions LLP</h1>
+                <div>1-195, MBT Road, Angallu, Chittoor, AP - 517326</div>
+                <div>public@hopire.tech</div>
+                <div>+91 9398983918</div>
+            </div>
+            <div class="quote-info">
+                <div class="quote-id">Quote #{{ quote.id }}</div>
+                <div class="quote-date">Date: {{ quote.created_at|date:"F d, Y" }}</div>
+                <div>Valid Until: {{ quote.expiry_date|date:"F d, Y" }}</div>
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <h2>Prepared For</h2>
+            <div>{{ quote.customer.name }}</div>
+            <div>{{ quote.customer.billing_address|linebreaks }}</div>
+            {% if quote.customer.gstin %}
+            <div>GSTIN: {{ quote.customer.gstin }}</div>
+            {% endif %}
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Discount</th>
+                    <th>Tax</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in quote.line_items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td class="amount">₹{{ item.unit_price|floatformat:2 }}</td>
+                    <td class="amount">₹{{ item.discount|floatformat:2 }}</td>
+                    <td class="amount">₹{{ item.tax|floatformat:2 }}</td>
+                    <td class="amount">₹{{ item.line_total|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span class="amount">₹{{ quote.total_amount|floatformat:2 }}</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Total Amount:</span>
+                <span class="amount">₹{{ quote.total_amount|floatformat:2 }}</span>
+            </div>
+        </div>
+
+        {% if quote.notes %}
+        <div class="notes">
+            <h3>Notes</h3>
+            {{ quote.notes|linebreaks }}
+        </div>
+        {% endif %}
+
+        <div class="quote-status status-{{ quote.status }}">
+            {{ quote.get_status_display }}
+        </div>
+
+        <div class="validity">
+            <strong>Quote Validity:</strong> This quote is valid until {{ quote.expiry_date|date:"F d, Y" }}
+        </div>
+
+        <div class="terms-section">
+            <h3>Terms & Conditions</h3>
+            <p>Please review our complete terms and conditions at: 
+                <a href="https://hopire.tech/termsandconditions" class="terms-link" target="_blank">https://hopire.tech/termsandconditions</a>
+            </p>
+            <p>For any queries regarding terms and conditions, please contact: 
+                <a href="mailto:ops@hopire.tech" class="terms-link">ops@hopire.tech</a>
+            </p>
+            <ul>
+                <li>This is a quotation only and not a binding contract.</li>
+                <li>Prices are valid only for the duration specified.</li>
+                <li>Final terms will be confirmed upon acceptance of the quote.</li>
+            </ul>
+        </div>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <h4>For Hopire Tech Solutions LLP</h4>
+                <p>Authorized Signatory</p>
+            </div>
+            <div class="signature-box">
+                <h4>{{ quote.customer.name }}</h4>
+                <p>Acceptance Signature</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="watermark">HOPIRE</div>
+
+    <script>
+        // Auto-print when opened from preview
+        if (window.location.hash === '#print') {
+            window.print();
+        }
+    </script>
+</body>
+</html>

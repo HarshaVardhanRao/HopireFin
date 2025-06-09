@@ -20,7 +20,20 @@ urlpatterns = [
     path('expenses/<int:pk>/delete/', views.expense_delete, name='expense_delete'),
     # Logs
     path('logs/', views.log_list, name='log_list'),
+    # Customer CRUD
+    path('customers/', views.customer_list, name='customer_list'),
+    path('customers/create/', views.customer_create, name='customer_create'),
+    path('customers/<int:pk>/edit/', views.customer_update, name='customer_update'),
+    path('customers/<int:pk>/delete/', views.customer_delete, name='customer_delete'),
+    # Product CRUD
+    path('products/', views.product_list, name='product_list'),
+    path('products/create/', views.product_create, name='product_create'),
+    path('products/<int:pk>/edit/', views.product_update, name='product_update'),
+    path('products/<int:pk>/delete/', views.product_delete, name='product_delete'),
     # Customer and Product Popups
     path('customers/create-popup/', views.customer_create_popup, name='customer_create_popup'),
     path('products/create-popup/', views.product_create_popup, name='product_create_popup'),
+    # Preview routes
+    path('invoices/<int:pk>/preview/', views.invoice_preview, name='invoice_preview'),
+    path('quotes/<int:pk>/preview/', views.quote_preview, name='quote_preview'),
 ]

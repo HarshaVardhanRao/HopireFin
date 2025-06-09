@@ -12,63 +12,70 @@
     </div>
 </div>
 
-    <div class="card table-container">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Customer</th>
-                    <th>Total Amount</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for invoice in invoices %}
-                <tr>
-                    <td class="invoice-id">{{ invoice.id }}</td>
-                    <td class="customer-name">{{ invoice.customer.name }}</td>
-                    <td class="amount">₹{{ invoice.total_amount|floatformat:2 }}</td>
-                    <td>
-                        {% if invoice.is_paid %}
-                        <span class="badge badge-success">Paid</span>
-                        {% else %}
-                        <span class="badge badge-warning">Unpaid</span>
-                        {% endif %}
-                    </td>
-                    <td class="date">{{ invoice.created_at|date:"M d, Y" }}</td>
-                    <td>
-                        <div class="actions">
-                            <a href="{% url 'invoice_update' invoice.id %}" class="action-btn" title="Edit">
-                                <i class="ri-edit-line"></i>
-                            </a>
-                            <a href="/invoices/{{ invoice.id }}/delete/" class="action-btn" title="Delete">
-                                <i class="ri-delete-bin-line"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center">No invoices found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="card table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.customer.name }}</td>
+                <td class="amount">₹{{ invoice.total_amount|floatformat:2 }}</td>
+                <td>
+                    {% if invoice.is_paid %}
+                    <span class="badge badge-success">Paid</span>
+                    {% else %}
+                    <span class="badge badge-warning">Unpaid</span>
+                    {% endif %}
+                </td>
+                <td>{{ invoice.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'invoice_update' invoice.id %}" class="action-btn" data-tooltip="Edit Invoice">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                        <a href="{% url 'invoice_delete' invoice.id %}" class="action-btn" data-tooltip="Delete Invoice">
+                            <i class="ri-delete-bin-line"></i>
+                        </a>
+                        <a href="{% url 'invoice_preview' invoice.id %}" class="action-btn" data-tooltip="Preview Invoice" target="_blank">
+                            <i class="ri-eye-line"></i>
+                        </a>
+                        <a href="{% url 'invoice_preview' invoice.id %}#print" class="action-btn" data-tooltip="Print Invoice" target="_blank">
+                            <i class="ri-printer-line"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No invoices found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    <style>
-    .header-actions {
-        margin-bottom: var(--spacing-lg);
-    }
+<style>
+.amount {
+    font-family: monospace;
+    font-weight: 500;
+}
 
-    .text-center {
-        text-align: center;
-        padding: var(--spacing-xl);
-        color: var(--text-dark-secondary);
-    }
-    </style>
-    {% endblock %}
+.text-center {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-dark-secondary);
+}
+</style>
+{% endblock %}
 </body>
 </html>

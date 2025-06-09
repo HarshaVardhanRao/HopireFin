@@ -321,25 +321,61 @@ body {
 /* Action buttons */
 .actions {
     display: flex;
-    gap: var(--spacing-sm);
+    gap: 0.25rem;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .action-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 2rem;
+    height: 2rem;
     border-radius: var(--radius-md);
     color: var(--text-dark-secondary);
     background: transparent;
     transition: all var(--transition-fast);
+    position: relative;
 }
 
 .action-btn:hover {
     background: var(--surface-dark-hover);
     color: var(--text-dark);
-    transform: scale(1.1);
+    transform: translateY(-1px);
+}
+
+.action-btn i {
+    font-size: 1rem;
+}
+
+/* Tooltips */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    background: var(--surface-dark);
+    color: var(--text-dark);
+    font-size: 0.75rem;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-md);
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-0.25rem);
 }
 
 /* Dashboard */
@@ -543,4 +579,44 @@ body {
 
 .theme-toggle:hover {
     background-color: var(--surface-dark-hover);
+}
+
+/* Print styles */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    .layout {
+        display: block !important;
+    }
+
+    .sidebar,
+    .header,
+    .no-print {
+        display: none !important;
+    }
+
+    .content {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .table {
+        border-collapse: collapse !important;
+    }
+
+    .table th,
+    .table td {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ddd !important;
+    }
+
+    .badge {
+        border: 1px solid #ddd !important;
+        color: black !important;
+        background: none !important;
+    }
 }

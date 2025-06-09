@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<div class="page-title-container">
+    <h1>Delete Customer</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="alert alert-danger">
+            <i class="ri-alert-line"></i>
+            Are you sure you want to delete customer "{{ customer.name }}"?
+            <br>
+            <small>This action cannot be undone.</small>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'customer_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">Delete Customer</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

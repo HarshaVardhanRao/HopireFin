@@ -314,3 +314,129 @@ def product_create_popup(request):
     else:
         form = ProductForm()
     return render(request, 'product_form_popup.html', {'form': form})
+
+@login_required
+def invoice_preview(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    return render(request, "invoice_print.html", {"invoice": invoice})
+
+@login_required
+def quote_preview(request, pk):
+    quote = get_object_or_404(Quote, pk=pk)
+    return render(request, "quote_print.html", {"quote": quote})
+
+@login_required
+def customer_list(request):
+    customers = Customer.objects.all().order_by('name')
+    return render(request, "customers.html", {"customers": customers})
+
+@login_required
+def customer_create(request):
+    if request.method == 'POST':
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            customer = form.save()
+            create_log(
+                action='create',
+                entity_type='customer',
+                entity_id=customer.id,
+                description=f"Created customer {customer.name}",
+                user=request.user.username if request.user.is_authenticated else None
+            )
+            return redirect('customer_list')
+    else:
+        form = CustomerForm()
+    return render(request, "customer_form.html", {"form": form, "title": "Add Customer"})
+
+@login_required
+def customer_update(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == 'POST':
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            updated_customer = form.save()
+            create_log(
+                action='update',
+                entity_type='customer',
+                entity_id=customer.id,
+                description=f"Updated customer {customer.name}",
+                user=request.user.username if request.user.is_authenticated else None
+            )
+            return redirect('customer_list')
+    else:
+        form = CustomerForm(instance=customer)
+    return render(request, "customer_form.html", {"form": form, "title": "Edit Customer"})
+
+@login_required
+def customer_delete(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == 'POST':
+        name = customer.name
+        customer.delete()
+        create_log(
+            action='delete',
+            entity_type='customer',
+            entity_id=pk,
+            description=f"Deleted customer {name}",
+            user=request.user.username if request.user.is_authenticated else None
+        )
+        return redirect('customer_list')
+    return render(request, "customer_confirm_delete.html", {"customer": customer})
+
+@login_required
+def product_list(request):
+    products = Product.objects.all().order_by('name')
+    return render(request, "products.html", {"products": products})
+
+@login_required
+def product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save()
+            create_log(
+                action='create',
+                entity_type='product',
+                entity_id=product.id,
+                description=f"Created product {product.name}",
+                user=request.user.username if request.user.is_authenticated else None
+            )
+            return redirect('product_list')
+    else:
+        form = ProductForm()
+    return render(request, "product_form.html", {"form": form, "title": "Add Product"})
+
+@login_required
+def product_update(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            updated_product = form.save()
+            create_log(
+                action='update',
+                entity_type='product',
+                entity_id=product.id,
+                description=f"Updated product {product.name}",
+                user=request.user.username if request.user.is_authenticated else None
+            )
+            return redirect('product_list')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, "product_form.html", {"form": form, "title": "Edit Product"})
+
+@login_required
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        name = product.name
+        product.delete()
+        create_log(
+            action='delete',
+            entity_type='product',
+            entity_id=pk,
+            description=f"Deleted product {name}",
+            user=request.user.username if request.user.is_authenticated else None
+        )
+        return redirect('product_list')
+    return render(request, "product_confirm_delete.html", {"product": product})

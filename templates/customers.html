@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block page_title %}Customers{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <a href="{% url 'customer_create' %}" class="btn btn-primary">
+            <i class="ri-add-line"></i>
+            <span>New Customer</span>
+        </a>
+    </div>
+</div>
+
+<div class="card table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>GSTIN</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.phone }}</td>
+                <td>{{ customer.gstin|default:"-" }}</td>
+                <td>{{ customer.created_at|date:"Y-m-d" }}</td>
+                <td class="actions">
+                    <a href="{% url 'customer_edit' customer.id %}" class="btn btn-icon btn-secondary" title="Edit">
+                        <i class="ri-pencil-line"></i>
+                    </a>
+                    <a href="{% url 'customer_delete' customer.id %}" class="btn btn-icon btn-danger" title="Delete">
+                        <i class="ri-delete-bin-line"></i>
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="empty-state">
+                    <div class="empty-state-content">
+                        <i class="ri-user-add-line"></i>
+                        <p>No customers found. Add your first customer to get started.</p>
+                        <a href="{% url 'customer_create' %}" class="btn btn-primary">
+                            <i class="ri-add-line"></i>
+                            Add Customer
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

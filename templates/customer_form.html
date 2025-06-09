@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+<div class="page-title-container">
+    <h1>{{ title }}</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Name *</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <div class="form-error">{{ form.name.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <div class="form-error">{{ form.email.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.phone.id_for_label }}">Phone</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+            <div class="form-error">{{ form.phone.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.gstin.id_for_label }}">GSTIN</label>
+            {{ form.gstin }}
+            {% if form.gstin.errors %}
+            <div class="form-error">{{ form.gstin.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.billing_address.id_for_label }}">Billing Address</label>
+            {{ form.billing_address }}
+            {% if form.billing_address.errors %}
+            <div class="form-error">{{ form.billing_address.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'customer_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Customer</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

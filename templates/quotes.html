@@ -43,15 +43,20 @@
                     {% endif %}
                 </td>
                 <td class="date">{{ quote.expiry_date|date:"M d, Y" }}</td>
-                <td class="date">{{ quote.created_at|date:"M d, Y" }}</td>
-                <td>
-                    <div class="actions">
-                        <a href="{% url 'quote_update' quote.id %}" class="action-btn" title="Edit">
-                            <i class="ri-edit-line"></i>
-                        </a>
-                        <a href="{% url 'quote_delete' quote.id %}" class="action-btn" title="Delete">
-                            <i class="ri-delete-bin-line"></i>
-                        </a>
+                <td class="date">{{ quote.created_at|date:"M d, Y" }}</td>                    <td>
+                        <div class="actions">
+                            <a href="{% url 'quote_update' quote.id %}" class="action-btn" data-tooltip="Edit Quote">
+                                <i class="ri-edit-line"></i>
+                            </a>
+                            <a href="{% url 'quote_delete' quote.id %}" class="action-btn" data-tooltip="Delete Quote">
+                                <i class="ri-delete-bin-line"></i>
+                            </a>
+                            <a href="{% url 'quote_preview' quote.id %}" class="action-btn" data-tooltip="Preview Quote" target="_blank">
+                                <i class="ri-eye-line"></i>
+                            </a>
+                            <a href="{% url 'quote_preview' quote.id %}#print" class="action-btn" data-tooltip="Print Quote" target="_blank">
+                                <i class="ri-printer-line"></i>
+                            </a>
                         {% if quote.status == 'accepted' %}
                         <a href="#" class="action-btn" title="Create Invoice" onclick="createInvoice({{ quote.id }})">
                             <i class="ri-file-list-line"></i>

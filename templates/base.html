@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>HopireK-Fin</title>
+    <title>HopireK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -12,7 +12,7 @@
     <div class="layout">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>HopireK-Fin</h2>
+                <h2>HopireK</h2>
                 <button id="menuToggle" class="menu-toggle">
                     <i class="ri-menu-line"></i>
                 </button>
@@ -33,6 +33,14 @@
                 <a href="{% url 'expense_list' %}" class="nav-link {% if 'expense' in request.path %}active{% endif %}">
                     <i class="ri-money-dollar-circle-line"></i>
                     <span>Expenses</span>
+                </a>
+                <a href="{% url 'customer_list' %}" class="nav-link {% if 'customer' in request.path %}active{% endif %}">
+                    <i class="ri-team-line"></i>
+                    <span>Customers</span>
+                </a>
+                <a href="{% url 'product_list' %}" class="nav-link {% if 'product' in request.path %}active{% endif %}">
+                    <i class="ri-shopping-cart-line"></i>
+                    <span>Products</span>
                 </a>
                 <a href="{% url 'log_list' %}" class="nav-link {% if 'logs' in request.path %}active{% endif %}">
                     <i class="ri-file-list-3-line"></i>

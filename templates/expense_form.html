@@ -8,6 +8,8 @@
 <body>
     {% extends "base.html" %}
 
+    {% block title %}{{ "Edit Expense" if expense else "Record New Expense" }} | HopireK-Fin{% endblock %}
+
     {% block page_title %}
         {% if expense %}Edit Expense{% else %}Record New Expense{% endif %}
     {% endblock %}
@@ -104,35 +106,16 @@
         display: flex;
         align-items: center;
         gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
         padding: var(--spacing-sm);
         background: var(--surface-dark-hover);
-        border-radius: var(--radius-sm);
-        margin-bottom: var(--spacing-sm);
+        border-radius: var(--radius-md);
         font-size: 0.875rem;
         color: var(--text-dark-secondary);
     }
 
-    input[type="file"] {
-        background: none;
-        padding: 0;
-        border: none;
-        font-size: 0.875rem;
-    }
-
-    input[type="file"]::file-selector-button {
-        padding: var(--spacing-sm) var(--spacing-md);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-dark);
-        background: var(--surface-dark);
-        color: var(--text-dark);
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        margin-right: var(--spacing-md);
-    }
-
-    input[type="file"]::file-selector-button:hover {
-        background: var(--surface-dark-hover);
+    .current-file i {
+        color: var(--text-dark-secondary);
     }
     </style>
 
