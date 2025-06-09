@@ -1,41 +1,95 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>HopireK-Fin ERP</title>
-</head>
-<body>
-    {% extends "base.html" %}
-    {% block content %}
-    <h1>Welcome to HopireK-Fin ERP</h1>
-    <p>This is the internal ERP system for Hopire.</p>
-    <div style="display:flex;gap:40px;margin-top:30px;">
-      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
-        <h3>Total Receivables</h3>
-        <p style="font-size:1.5em;font-weight:bold;">₹{{ total_receivables|default:'0.00' }}</p>
-      </div>
-      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
-        <h3>Outstanding Invoices</h3>
-        <p style="font-size:1.5em;font-weight:bold;">₹{{ outstanding_invoices|default:'0.00' }}</p>
-      </div>
-      <div style="background:#f0f4f8;padding:20px 30px;border-radius:8px;min-width:220px;">
-        <h3>Total Expenses</h3>
-        <p style="font-size:1.5em;font-weight:bold;">₹{{ total_expenses|default:'0.00' }}</p>
-      </div>
+{% extends "base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Stats Section -->
+    <div class="stats-grid">
+        <div class="card stat-card">
+            <div class="stat-icon">
+                <i class="ri-money-dollar-circle-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Receivables</h3>
+                <p class="stat-value">₹{{ total_receivables|floatformat:2 }}</p>
+            </div>
+        </div>
+        
+        <div class="card stat-card">
+            <div class="stat-icon warning">
+                <i class="ri-time-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Outstanding Invoices</h3>
+                <p class="stat-value">₹{{ outstanding_invoices|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon success">
+                <i class="ri-bank-card-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Amount Received</h3>
+                <p class="stat-value">₹{{ total_received|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-icon error">
+                <i class="ri-wallet-3-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Expenses</h3>
+                <p class="stat-value">₹{{ total_expenses|floatformat:2 }}</p>
+            </div>
+        </div>
     </div>
-    <div style="margin-top:40px;">
-      <h3>Recent Activity</h3>
-      <ul>
-        {% for log in recent_logs %}
-          <li>{{ log }}</li>
-        {% empty %}
-          <li>No recent activity.</li>
-        {% endfor %}
-      </ul>
+
+    <!-- Filters Section -->
+    <div class="card filter-card">
+        <h3>Filter Transactions</h3>
+        <form class="filter-form" method="get">
+            <div class="form-group">
+                <label for="from_date" class="form-label">From Date</label>
+                <input type="date" id="from_date" name="from_date" class="form-control" value="{{ from_date }}">
+            </div>
+            <div class="form-group">
+                <label for="to_date" class="form-label">To Date</label>
+                <input type="date" id="to_date" name="to_date" class="form-control" value="{{ to_date }}">
+            </div>
+            <div class="form-group">
+                <label for="customer" class="form-label">Customer</label>
+                <select id="customer" name="customer" class="form-control">
+                    <option value="">All Customers</option>
+                    {% for customer in customers %}
+                    <option value="{{ customer.id }}" {% if customer.id == selected_customer %}selected{% endif %}>
+                        {{ customer.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </form>
     </div>
-    <ul>
-        <li><a href="/admin/">Admin Panel</a></li>
-    </ul>
-    {% endblock %}
-</body>
-</html>
+
+    <!-- Recent Activity Section -->
+    <div class="card activity-card">
+        <h3>Recent Activity</h3>
+        <div class="activity-list">
+            {% for log in recent_logs %}
+            <div class="activity-item">
+                <i class="ri-file-list-line activity-icon"></i>
+                <span class="activity-text">{{ log }}</span>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="ri-information-line"></i>
+                <p>No recent activity</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

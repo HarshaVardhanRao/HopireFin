@@ -6,12 +6,113 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Delete Expense</h1>
-    <p>Are you sure you want to delete this expense?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Yes, delete</button>
-        <a href="/expenses/">Cancel</a>
-    </form>
+    {% extends "base.html" %}
+
+    {% block page_title %}Delete Expense{% endblock %}
+
+    {% block content %}
+    <div class="delete-confirmation">
+        <div class="card confirmation-card">
+            <div class="confirmation-icon">
+                <i class="ri-error-warning-line"></i>
+            </div>
+            
+            <h2>Delete Expense Record?</h2>
+            
+            <div class="confirmation-details">
+                <p>Are you sure you want to delete this expense record?</p>
+                
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Category:</span>
+                        <span class="detail-value">{{ expense.category }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Amount:</span>
+                        <span class="detail-value">₹{{ expense.amount|floatformat:2 }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value">{{ expense.date|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Payment Method:</span>
+                        <span class="detail-value">{{ expense.payment_method }}</span>
+                    </div>
+                    
+                    {% if expense.description %}
+                    <div class="detail-item full-width">
+                        <span class="detail-label">Description:</span>
+                        <span class="detail-value">{{ expense.description }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if expense.receipt %}
+                <div class="attachment-preview">
+                    <span class="detail-label">Attached Receipt:</span>
+                    <a href="{{ expense.receipt.url }}" class="receipt-link" target="_blank">
+                        <i class="ri-file-text-line"></i>
+                        View Receipt
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="warning-message">
+                    <i class="ri-alert-line"></i>
+                    <span>This action cannot be undone. The receipt file will also be deleted.</span>
+                </div>
+            </div>
+            
+            <div class="confirmation-actions">
+                <a href="{% url 'expense_list' %}" class="btn btn-secondary">
+                    <i class="ri-arrow-left-line"></i>
+                    Cancel
+                </a>
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ri-delete-bin-line"></i>
+                        Delete Expense
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .detail-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .attachment-preview {
+        margin-top: var(--spacing-lg);
+        padding-top: var(--spacing-lg);
+        border-top: 1px solid var(--border-dark);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .receipt-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        color: var(--accent-dark);
+        text-decoration: none;
+        padding: var(--spacing-sm);
+        background: var(--surface-dark);
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+    }
+
+    .receipt-link:hover {
+        background: var(--surface-dark-hover);
+    }
+    </style>
+    {% endblock %}
 </body>
 </html>

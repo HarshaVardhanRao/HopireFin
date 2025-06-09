@@ -3,18 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <title>HopireK-Fin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-    <nav style="background:#f0f4f8;padding:10px 0 10px 20px;">
-        <a href="/">Home</a>
-        <a href="/invoices/">Invoices</a>
-        <a href="/quotes/">Quotes</a>
-        <a href="/expenses/">Expenses</a>
-        <a href="/logs/">Logs</a>
-        <a href="/admin/" style="float:right;margin-right:20px;">Admin</a>
-    </nav>
-    <hr>
-    {% block content %}{% endblock %}
+<body class="dark-theme">
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>HopireK-Fin</h2>
+                <button id="menuToggle" class="menu-toggle">
+                    <i class="ri-menu-line"></i>
+                </button>
+            </div>
+            <nav class="nav">
+                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'invoice_list' %}" class="nav-link {% if 'invoice' in request.path %}active{% endif %}">
+                    <i class="ri-file-list-line"></i>
+                    <span>Invoices</span>
+                </a>
+                <a href="{% url 'quote_list' %}" class="nav-link {% if 'quote' in request.path %}active{% endif %}">
+                    <i class="ri-draft-line"></i>
+                    <span>Quotes</span>
+                </a>
+                <a href="{% url 'expense_list' %}" class="nav-link {% if 'expense' in request.path %}active{% endif %}">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    <span>Expenses</span>
+                </a>
+                <a href="{% url 'log_list' %}" class="nav-link {% if 'logs' in request.path %}active{% endif %}">
+                    <i class="ri-file-list-3-line"></i>
+                    <span>Logs</span>
+                </a>
+            </nav>
+        </aside>
+        <main class="main">
+            <header class="header">
+                <div class="header-content">
+                    <div class="page-title">
+                        {% block page_title %}{% endblock %}
+                    </div>
+                    <div class="header-actions">
+                        <button id="themeToggle" class="theme-toggle">
+                            <i class="ri-sun-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <div class="content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const layout = document.querySelector('.layout');
+        
+        menuToggle.addEventListener('click', () => {
+            layout.classList.toggle('show-sidebar');
+        });
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const theme = localStorage.getItem('theme') || 'dark';
+        
+        if (theme) {
+            body.classList.add(theme + '-theme');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="ri-moon-line"></i>';
+            } else {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="ri-sun-line"></i>';
+            }
+        });
+    </script>
 </body>
 </html>

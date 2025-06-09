@@ -1,44 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoices | HopireK-Fin</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% extends "base.html" %}
-    {% block content %}
-    <h1>Invoices</h1>
-    <a href="/invoices/create/">Add Invoice <img src="/static/plus-icon.svg" alt="+" style="width:16px;vertical-align:middle;"></a>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Customer</th>
-                <th>Total Amount</th>
-                <th>Paid</th>
-                <th>Created At</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for invoice in invoices %}
-            <tr>
-                <td>{{ invoice.id }}</td>
-                <td>{{ invoice.customer.name }}</td>
-                <td>{{ invoice.total_amount }}</td>
-                <td>{{ invoice.is_paid }}</td>
-                <td>{{ invoice.created_at }}</td>
-                <td>
-                    <a href="/invoices/{{ invoice.id }}/edit/">Edit</a> |
-                    <a href="/invoices/{{ invoice.id }}/delete/">Delete</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="6">No invoices found.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends "base.html" %}
+
+{% block page_title %}Invoices{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <a href="{% url 'invoice_create' %}" class="btn btn-primary">
+            <i class="ri-add-line"></i>
+            <span>New Invoice</span>
+        </a>
+    </div>
+</div>
+
+    <div class="card table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                    <td class="invoice-id">{{ invoice.id }}</td>
+                    <td class="customer-name">{{ invoice.customer.name }}</td>
+                    <td class="amount">₹{{ invoice.total_amount|floatformat:2 }}</td>
+                    <td>
+                        {% if invoice.is_paid %}
+                        <span class="badge badge-success">Paid</span>
+                        {% else %}
+                        <span class="badge badge-warning">Unpaid</span>
+                        {% endif %}
+                    </td>
+                    <td class="date">{{ invoice.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'invoice_update' invoice.id %}" class="action-btn" title="Edit">
+                                <i class="ri-edit-line"></i>
+                            </a>
+                            <a href="/invoices/{{ invoice.id }}/delete/" class="action-btn" title="Delete">
+                                <i class="ri-delete-bin-line"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No invoices found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <style>
+    .header-actions {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .text-center {
+        text-align: center;
+        padding: var(--spacing-xl);
+        color: var(--text-dark-secondary);
+    }
+    </style>
     {% endblock %}
 </body>
 </html>

@@ -1,44 +1,171 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Expenses | HopireK-Fin</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% extends "base.html" %}
-    {% block content %}
-    <h1>Expenses</h1>
-    <a href="/expenses/create/">Add Expense <img src="/static/plus-icon.svg" alt="+" style="width:16px;vertical-align:middle;"></a>
-    <table>
+{% extends "base.html" %}
+
+{% block page_title %}Expenses{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-filters">
+        <div class="filter-group">
+            <label for="category-filter" class="filter-label">Category</label>
+            <select id="category-filter" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="office">Office Supplies</option>
+                <option value="travel">Travel</option>
+                <option value="utilities">Utilities</option>
+                <option value="others">Others</option>
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="date-filter" class="filter-label">Date Range</label>
+            <select id="date-filter" class="filter-select">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="header-actions">
+        <a href="{% url 'expense_create' %}" class="btn btn-primary">
+            <i class="ri-add-line"></i>
+            <span>Record Expense</span>
+        </a>
+    </div>
+</div>
+
+<div class="card table-container">
+    <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Date</th>
-                <th>Amount</th>
                 <th>Category</th>
-                <th>Vendor</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Receipt</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for expense in expenses %}
             <tr>
-                <td>{{ expense.id }}</td>
-                <td>{{ expense.date }}</td>
-                <td>{{ expense.amount }}</td>
-                <td>{{ expense.category }}</td>
-                <td>{{ expense.vendor }}</td>
+                <td class="date">{{ expense.date|date:"M d, Y" }}</td>
                 <td>
-                    <a href="/expenses/{{ expense.id }}/edit/">Edit</a> |
-                    <a href="/expenses/{{ expense.id }}/delete/">Delete</a>
+                    <span class="badge">{{ expense.category }}</span>
+                </td>
+                <td class="description">{{ expense.description }}</td>
+                <td class="amount">₹{{ expense.amount|floatformat:2 }}</td>
+                <td>{{ expense.payment_method }}</td>
+                <td>
+                    {% if expense.receipt %}
+                    <a href="{{ expense.receipt.url }}" class="receipt-link" target="_blank">
+                        <i class="ri-file-text-line"></i>
+                        View
+                    </a>
+                    {% else %}
+                    <span class="text-muted">No receipt</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'expense_update' expense.id %}" class="action-btn" title="Edit">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                        <a href="{% url 'expense_delete' expense.id %}" class="action-btn" title="Delete">
+                            <i class="ri-delete-bin-line"></i>
+                        </a>
+                    </div>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">No expenses found.</td></tr>
+            <tr>
+                <td colspan="7" class="text-center">No expenses recorded yet.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% endblock %}
-</body>
-</html>
+</div>
+
+<style>
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+
+.header-filters {
+    display: flex;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    color: var(--text-dark-secondary);
+}
+
+.filter-select {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--surface-dark);
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-md);
+    color: var(--text-dark);
+    min-width: 150px;
+}
+
+.description {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.receipt-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--accent-dark);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.receipt-link:hover {
+    text-decoration: underline;
+}
+
+.text-muted {
+    color: var(--text-dark-secondary);
+    font-size: 0.875rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('category-filter');
+    const dateFilter = document.getElementById('date-filter');
+    
+    function applyFilters() {
+        const category = categoryFilter.value;
+        const dateRange = dateFilter.value;
+        
+        // TODO: Implement filter logic
+        console.log('Filtering by:', { category, dateRange });
+    }
+    
+    categoryFilter.addEventListener('change', applyFilters);
+    dateFilter.addEventListener('change', applyFilters);
+});
+</script>
+{% endblock %}

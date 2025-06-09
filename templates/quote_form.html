@@ -7,32 +7,163 @@
 </head>
 <body>
     {% extends "base.html" %}
+
+    {% block page_title %}
+        {% if quote %}Edit Quote #{{ quote.id }}{% else %}Create New Quote{% endif %}
+    {% endblock %}
+
     {% block content %}
-    <h1>{% if quote %}Edit Quote{% else %}Add Quote{% endif %}</h1>
-    <a href="/quotes/">Back to Quotes</a>
-    <form method="post" id="quote-form">
-        {% csrf_token %}
-        <label for="id_customer">Customer:</label>
-        {{ form.customer }}
-        <a href="/customers/create-popup/" target="_blank" title="Add Customer">
-            <img src="/static/plus-icon.svg" alt="Add" style="width:16px;vertical-align:middle;">
-        </a>
-        <br>
-        {{ form.expiry_date.label_tag }} {{ form.expiry_date }}<br>
-        {{ form.status.label_tag }} {{ form.status }}<br>
-        {{ form.total_amount.label_tag }} {{ form.total_amount }}<br>
-        {{ form.notes.label_tag }} {{ form.notes }}<br>
-        <button type="submit">Save</button>
-    </form>
+    <div class="form-page">
+        <div class="card form-card">
+            <form method="post" class="form-grid" id="quote-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3>Customer Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_customer" class="form-label">Customer</label>
+                            {{ form.customer }}
+                            {% if form.customer.errors %}
+                            <div class="form-error">
+                                {{ form.customer.errors }}
+                            </div>
+                            {% endif %}
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="openCustomerPopup()">
+                                <i class="ri-add-line"></i>
+                                Add New Customer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Quote Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_expiry_date" class="form-label">Expiry Date</label>
+                            {{ form.expiry_date }}
+                            {% if form.expiry_date.errors %}
+                            <div class="form-error">
+                                {{ form.expiry_date.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_status" class="form-label">Status</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                            <div class="form-error">
+                                {{ form.status.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_total_amount" class="form-label">Total Amount</label>
+                            {{ form.total_amount }}
+                            {% if form.total_amount.errors %}
+                            <div class="form-error">
+                                {{ form.total_amount.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="id_notes" class="form-label">Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                            <div class="form-error">
+                                {{ form.notes.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'quote_list' %}" class="btn btn-secondary">
+                        <i class="ri-arrow-left-line"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri-save-line"></i>
+                        {% if quote %}Update{% else %}Create{% endif %} Quote
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Creation Popup -->
+    <div id="customerPopup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Add New Customer</h3>
+                <button type="button" class="popup-close" onclick="closeCustomerPopup()">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <div class="popup-body" id="customerForm">
+                <!-- Form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <script>
-    function addCustomerToSelect(id, name) {
-        var select = document.getElementById('id_customer');
-        var option = document.createElement('option');
-        option.value = id;
-        option.text = name;
-        option.selected = true;
-        select.add(option);
+    function openCustomerPopup() {
+        const popup = document.getElementById('customerPopup');
+        const formContainer = document.getElementById('customerForm');
+        
+        popup.classList.add('show');
+        
+        // Load the customer form
+        fetch('/customers/create-popup/')
+            .then(response => response.text())
+            .then(html => {
+                formContainer.innerHTML = html;
+                // Setup form submission
+                const form = formContainer.querySelector('form');
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const response = await fetch('/customers/create-popup/', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Add new option to customer select
+                        const select = document.getElementById('id_customer');
+                        const option = new Option(data.name, data.id);
+                        select.add(option);
+                        select.value = data.id;
+                        closeCustomerPopup();
+                    } else {
+                        // Show errors in the form
+                        formContainer.innerHTML = data.errors;
+                    }
+                };
+            });
     }
+
+    function closeCustomerPopup() {
+        const popup = document.getElementById('customerPopup');
+        popup.classList.remove('show');
+    }
+
+    // Initialize datepicker for expiry date
+    document.addEventListener('DOMContentLoaded', function() {
+        const expiryDateInput = document.getElementById('id_expiry_date');
+        if (expiryDateInput) {
+            expiryDateInput.type = 'date';
+        }
+    });
     </script>
     {% endblock %}
 </body>

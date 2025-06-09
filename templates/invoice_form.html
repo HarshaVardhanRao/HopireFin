@@ -1,46 +1,304 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoice Form | HopireK-Fin</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
 {% extends "base.html" %}
-{% block content %}
-    <h1>{% if invoice %}Edit Invoice{% else %}Add Invoice{% endif %}</h1>
-    <a href="/invoices/">Back to Invoices</a>
-    <form method="post" id="invoice-form">
-        {% csrf_token %}
-        <label for="id_customer">Customer:</label>
-        {{ form.customer }}
-        <a href="/customers/create-popup/" target="_blank" title="Add Customer">
-            <img src="/static/plus-icon.svg" alt="Add" style="width:18px;vertical-align:middle;">
-        </a>
-        <br>
-        <label for="id_quote">Quote:</label>
-        {{ form.quote }}
-        <a href="/quotes/create/" target="_blank" title="Add Quote">
-            <img src="/static/plus-icon.svg" alt="Add" style="width:18px;vertical-align:middle;">
-        </a>
-        <br>
-        {{ form.reference_id.label_tag }} {{ form.reference_id }}<br>
-        {{ form.payment_method.label_tag }} {{ form.payment_method }}<br>
-        {{ form.total_amount.label_tag }} {{ form.total_amount }}<br>
-        {{ form.notes.label_tag }} {{ form.notes }}<br>
-        {{ form.is_paid.label_tag }} {{ form.is_paid }}<br>
-        <button type="submit">Save</button>
-    </form>
-    <script>
-    function addCustomerToSelect(id, name) {
-        var select = document.getElementById('id_customer');
-        var option = document.createElement('option');
-        option.value = id;
-        option.text = name;
-        option.selected = true;
-        select.add(option);
-    }
-    </script>
+
+{% block page_title %}
+    {% if invoice %}Edit Invoice #{{ invoice.id }}{% else %}Create New Invoice{% endif %}
 {% endblock %}
-</body>
-</html>
+
+{% block content %}
+<div class="form-page">
+    <div class="card form-card">
+        <form method="post" class="form-grid">
+            {% csrf_token %}
+            <div class="form-section">
+                <h3>Customer Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_customer" class="form-label">Customer</label>
+                        {{ form.customer }}
+                        {% if form.customer.errors %}
+                        <div class="form-error">
+                            {{ form.customer.errors }}
+                        </div>
+                        {% endif %}
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="openCustomerPopup()">
+                            <i class="ri-add-line"></i>
+                            Add New Customer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Invoice Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_quote" class="form-label">Related Quote (Optional)</label>
+                        {{ form.quote }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_reference_id" class="form-label">Reference ID</label>
+                        {{ form.reference_id }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_payment_method" class="form-label">Payment Method</label>
+                        {{ form.payment_method }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_total_amount" class="form-label">Total Amount</label>
+                        {{ form.total_amount }}
+                        {% if form.total_amount.errors %}
+                        <div class="form-error">
+                            {{ form.total_amount.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="id_notes" class="form-label">Notes</label>
+                        {{ form.notes }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_is_paid" class="form-label-inline">
+                            {{ form.is_paid }}
+                            Payment Status
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'invoice_list' %}" class="btn btn-secondary">
+                    <i class="ri-arrow-left-line"></i>
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="ri-save-line"></i>
+                    {% if invoice %}Update{% else %}Create{% endif %} Invoice
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Customer Creation Popup -->
+<div id="customerPopup" class="popup">
+    <div class="popup-content">
+        <div class="popup-header">
+            <h3>Add New Customer</h3>
+            <button type="button" class="popup-close" onclick="closeCustomerPopup()">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        <div class="popup-body" id="customerForm">
+            <!-- Form will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+function openCustomerPopup() {
+    const popup = document.getElementById('customerPopup');
+    const formContainer = document.getElementById('customerForm');
+    
+    popup.classList.add('show');
+    
+    // Load the customer form
+    fetch('/customers/create-popup/')
+        .then(response => response.text())
+        .then(html => {
+            formContainer.innerHTML = html;
+            // Setup form submission
+            const form = formContainer.querySelector('form');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const response = await fetch('/customers/create-popup/', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Add new option to customer select
+                    const select = document.getElementById('id_customer');
+                    const option = new Option(data.name, data.id);
+                    select.add(option);
+                    select.value = data.id;
+                    closeCustomerPopup();
+                } else {
+                    // Show errors in the form
+                    formContainer.innerHTML = data.errors;
+                }
+            };
+        });
+}
+
+function closeCustomerPopup() {
+    const popup = document.getElementById('customerPopup');
+    popup.classList.remove('show');
+}
+</script>
+
+<style>
+/* Form Page Styles */
+.form-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+.form-card {
+    background: var(--surface-dark);
+}
+
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-section h3 {
+    color: var(--text-dark);
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Form Controls */
+.form-control, 
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select,
+textarea {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--surface-dark-hover);
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius-md);
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-label-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+}
+
+.form-error {
+    color: var(--error-dark);
+    font-size: 0.875rem;
+    margin-top: var(--spacing-xs);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+/* Popup Styles */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.popup.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: var(--surface-dark);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-dark);
+}
+
+.popup-close {
+    background: none;
+    border: none;
+    color: var(--text-dark-secondary);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.popup-close:hover {
+    background: var(--surface-dark-hover);
+    color: var(--text-dark);
+}
+
+.popup-body {
+    padding: var(--spacing-lg);
+}
+
+/* Helper Classes */
+.btn-sm {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

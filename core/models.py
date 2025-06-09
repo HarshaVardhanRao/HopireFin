@@ -30,11 +30,20 @@ class Customer(models.Model):
 
     @property
     def receivables(self):
-        # Sum of all accepted quotes and outstanding invoices
         from django.db.models import Sum, Q
-        quote_total = self.quotes.filter(status='accepted').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-        invoice_total = self.invoices.filter(is_paid=False).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-        return quote_total + invoice_total
+        # Receivables: sum of all accepted quotes minus sum of all paid invoices
+        accepted_quotes = self.quotes.filter(status='accepted').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        unpaid_invoices = self.invoices.filter(is_paid=False).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        paid_invoices = self.invoices.filter(is_paid=True).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        # Receivables = accepted quotes (not yet invoiced) + unpaid invoices
+        return accepted_quotes + unpaid_invoices
+
+    @property
+    def amount_received(self):
+        from django.db.models import Sum
+        # Amount received: sum of all paid invoices
+        paid_invoices = self.invoices.filter(is_paid=True).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        return paid_invoices
 
 class Quote(models.Model):
     STATUS_CHOICES = [
@@ -113,3 +122,32 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.amount} on {self.date}"
+
+class Log(models.Model):
+    ACTION_CHOICES = [
+        ('create', 'Create'),
+        ('update', 'Update'),
+        ('delete', 'Delete'),
+        ('payment', 'Payment'),
+    ]
+    ENTITY_CHOICES = [
+        ('invoice', 'Invoice'),
+        ('quote', 'Quote'),
+        ('expense', 'Expense'),
+        ('customer', 'Customer'),
+        ('product', 'Product'),
+    ]
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=20, choices=ACTION_CHOICES)
+    entity_type = models.CharField(max_length=20, choices=ENTITY_CHOICES)
+    entity_id = models.PositiveIntegerField()
+    description = models.TextField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    user = models.CharField(max_length=255, blank=True)  # Store username or user identifier
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.action} {self.entity_type} #{self.entity_id} - {self.timestamp}"

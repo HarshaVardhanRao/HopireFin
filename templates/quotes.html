@@ -1,44 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quotes | HopireK-Fin</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% extends "base.html" %}
-    {% block content %}
-    <h1>Quotes</h1>
-    <a href="/quotes/create/">Add Quote <img src="/static/plus-icon.svg" alt="+" style="width:16px;vertical-align:middle;"></a>
-    <table>
+{% extends "base.html" %}
+
+{% block page_title %}Quotes{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <a href="{% url 'quote_create' %}" class="btn btn-primary">
+            <i class="ri-add-line"></i>
+            <span>New Quote</span>
+        </a>
+    </div>
+</div>
+
+<div class="card table-container">
+    <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Customer</th>
-                <th>Status</th>
                 <th>Total Amount</th>
+                <th>Status</th>
                 <th>Expiry Date</th>
+                <th>Created At</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for quote in quotes %}
             <tr>
-                <td>{{ quote.id }}</td>
-                <td>{{ quote.customer.name }}</td>
-                <td>{{ quote.status }}</td>
-                <td>{{ quote.total_amount }}</td>
-                <td>{{ quote.expiry_date }}</td>
+                <td class="quote-id">{{ quote.id }}</td>
+                <td class="customer-name">{{ quote.customer.name }}</td>
+                <td class="amount">₹{{ quote.total_amount|floatformat:2 }}</td>
                 <td>
-                    <a href="/quotes/{{ quote.id }}/edit/">Edit</a> |
-                    <a href="/quotes/{{ quote.id }}/delete/">Delete</a>
+                    {% if quote.status == 'accepted' %}
+                    <span class="badge badge-success">Accepted</span>
+                    {% elif quote.status == 'declined' %}
+                    <span class="badge badge-error">Declined</span>
+                    {% elif quote.status == 'sent' %}
+                    <span class="badge badge-warning">Sent</span>
+                    {% else %}
+                    <span class="badge">Draft</span>
+                    {% endif %}
+                </td>
+                <td class="date">{{ quote.expiry_date|date:"M d, Y" }}</td>
+                <td class="date">{{ quote.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'quote_update' quote.id %}" class="action-btn" title="Edit">
+                            <i class="ri-edit-line"></i>
+                        </a>
+                        <a href="{% url 'quote_delete' quote.id %}" class="action-btn" title="Delete">
+                            <i class="ri-delete-bin-line"></i>
+                        </a>
+                        {% if quote.status == 'accepted' %}
+                        <a href="#" class="action-btn" title="Create Invoice" onclick="createInvoice({{ quote.id }})">
+                            <i class="ri-file-list-line"></i>
+                        </a>
+                        {% endif %}
+                    </div>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">No quotes found.</td></tr>
+            <tr>
+                <td colspan="7" class="text-center">No quotes found.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% endblock %}
-</body>
-</html>
+</div>
+
+<script>
+function createInvoice(quoteId) {
+    // TODO: Implement invoice creation from quote
+    alert('Create invoice from quote #' + quoteId);
+}
+</script>
+
+<style>
+.content-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.text-center {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-dark-secondary);
+}
+
+.quote-id {
+    font-family: monospace;
+    color: var(--text-dark-secondary);
+}
+
+.amount {
+    font-family: monospace;
+    font-weight: 500;
+}
+
+.date {
+    color: var(--text-dark-secondary);
+    font-size: 0.875rem;
+}
+
+.customer-name {
+    font-weight: 500;
+}
+</style>
+{% endblock %}
